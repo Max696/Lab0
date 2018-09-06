@@ -11,6 +11,8 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String text) {
                 if (map.containsKey(text)) {
-
+                    lstV.getAdapter();
                     lstV.setAdapter(adapter);
                     adapter.getFilter().filter(text);
                 }else{
@@ -87,4 +89,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void ordenAscendente(View v){
+        Collections.sort(resultant);
+    }
+    public static Comparator<Cancion> name = new Comparator<Cancion>(){
+        public int compare(Cancion c1, Cancion c2){
+            return c1.getNombre().compareTo(c2.getNombre());
+        }
+    };
+
 }
+
