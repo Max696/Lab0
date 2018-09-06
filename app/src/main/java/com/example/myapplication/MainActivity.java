@@ -1,47 +1,59 @@
 package com.example.myapplication;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.example.myapplication.R.layout.support_simple_spinner_dropdown_item;
 
 public class MainActivity extends AppCompatActivity {
 
-    ListView listaCanciones;
+    ArrayAdapter<Cancion> adapter;
+    ArrayAdapter<Cancion> adap2;
+    ArrayList<Cancion> PlayList;
+    Cancion cancion;
+    Cancion[] resultant;
+    Cancion[] intento;
+    ListView lstV;
+    Map<String,Cancion> map;
     SearchView searchView;
-    Map<String,String> map;
-    ArrayAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        map = new HashMap<String,String>();
-        searchView = (SearchView) findViewById(R.id.buscador);
+        PlayList = new ArrayList<>();
+        lstV = findViewById(R.id.PlayList);
+        searchView = findViewById(R.id.buscador);
 
+        map = new HashMap<>();
 
+        map.put("Wait and Bleed",new Cancion("Slipknot","Wait and Bleed",2));
+        map.put("Duality", new Cancion("Slipknot","Duality",2));
+        map.put("The Devil in I",new Cancion("Slipknot","The Devil in I",2));
 
-        map.put("Hola","x");
-        map.put("K dice","x");
-        map.put("Colega","x");
+        resultant = map.values().toArray(new Cancion[0]);
+        intento = resultant;
+        intento[0] = new Cancion("Rock","Wait n Bleed",2);
 
-        String[] key = map.keySet().toArray(new String[0]);
-        listaCanciones = findViewById(R.id.songs);
-        adapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,key);
-        listaCanciones.setAdapter(adapter);
+        adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, resultant);
+        adap2 = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, intento);
 
+        lstV.setAdapter(adap2);
+
+        //Boton de busqueda
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
@@ -50,16 +62,29 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String text) {
-            adapter.getFilter().filter(text);
+                if (map.containsKey(text)) {
+
+                    lstV.setAdapter(adapter);
+                    adapter.getFilter().filter(text);
+                }else{
+                    lstV.setAdapter(adap2);
+                }
+
                 return false;
             }
         });
 
+        //CUANDO SELECIONAMOS UNA CANCION DEL LISTADO
+        lstV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Cancion cancion = (Cancion) adapter.getItem(i);
+                PlayList.add(cancion);
+                Toast.makeText(getBaseContext(), "Añadido " + cancion.getNombre(),Toast.LENGTH_LONG).show();
+            }
+        });
+
+
     }
-    public void sendMessage(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        startActivity(intent);
-    }
-    public final static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+
 }
